@@ -1,0 +1,60 @@
+.header{
+    color: red;
+    font-size: 30px;
+    border-color: rgb(191, 31, 215);
+    display: flex;
+    justify-content: space-between;
+    font-size: 30px;
+    margin: 10px;
+    padding: 10px;
+}
+.divHeader{
+    height: 60px;
+    background-color: black;
+    color: red;
+    font-size: 10px;
+    border-color: rgb(191, 31, 215);
+    display: flex;
+    justify-content: space-between;
+    margin: 10px;
+    padding: 10px;
+    font-size: 30px;
+    align-items: center;
+}
+.headerLog{
+    margin: 10px;
+    padding: 10px;
+    font-size: 20px;
+
+
+}
+.HeaderImage{
+    width:20%;
+    height: 100%;
+    margin-top: 2%;
+
+}
+.header1{
+    margin-right:3.5cm;
+    align-items: center;
+    color: blue;
+}
+.header2{
+    margin-right:3.5cm;
+    align-items: center;
+    color: blue;
+}
+.header3{
+    margin-right:3.5cm;
+    align-items: center;
+    color: blue;
+}
+.header4{
+    margin-right:3.5cm;
+    align-items: center;
+    color: blue;
+}
+.body{
+    display: flex;
+    flex-wrap: wrap;
+}

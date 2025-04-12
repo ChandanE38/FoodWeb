@@ -1,0 +1,87 @@
+
+
+export const SkillList=[
+    {
+        id:1,
+        name:"Communication",
+        image:"https://th.bing.com/th/id/OIP.jJI3bTJ-diLfKDHb9-vwmwHaE8?w=298&h=198&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+        rating:"4.1",
+        price:100,
+        inCart:false,
+        count:1
+        
+    },
+    {
+        id:2,
+        name:"Critical Thinking",
+        image:"https://th.bing.com/th/id/OIP.jJI3bTJ-diLfKDHb9-vwmwHaE8?w=298&h=198&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+        rating:"4.2",
+        price:120,
+        inCart:false,
+        count:1
+    },
+    {
+        id:3,
+        name:"Thinking",
+        image:"https://th.bing.com/th/id/OIP.jJI3bTJ-diLfKDHb9-vwmwHaE8?w=298&h=198&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+        rating:"4.3",
+        price:140,
+        inCart:false,
+        count:1
+    },
+    {
+        id:4,
+        name:"Problem Solving",
+        image:"https://th.bing.com/th/id/OIP.jJI3bTJ-diLfKDHb9-vwmwHaE8?w=298&h=198&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+        rating:"4.4",
+        price:160,
+        inCart:false,
+        count:1
+    },
+    {
+        id:5,
+        name:"Coading",
+        image:"https://th.bing.com/th/id/OIP.jJI3bTJ-diLfKDHb9-vwmwHaE8?w=298&h=198&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+        rating:"4.5",
+        price:180,
+        inCart:false,
+        count:1
+    },  
+    {
+        id:6,
+        name:"Typing",
+        image:"https://th.bing.com/th/id/OIP.jJI3bTJ-diLfKDHb9-vwmwHaE8?w=298&h=198&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+        rating:"4.6",
+        price:200,
+        inCart:false,
+        count:1
+    },
+    {
+        id:7,
+        name:"Dancing",
+        image:"https://th.bing.com/th/id/OIP.jJI3bTJ-diLfKDHb9-vwmwHaE8?w=298&h=198&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+        rating:"4.7",
+        price:220,
+        inCart:false,
+        count:1
+    },  
+    {
+        id:8,
+        name:"Swimming",
+        image:"https://th.bing.com/th/id/OIP.jJI3bTJ-diLfKDHb9-vwmwHaE8?w=298&h=198&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+        rating:"4.8",
+        price:240,
+        inCart:false,
+        count:1
+    },  
+    {
+        id:9,
+        name:"Teaching",
+        image:"https://th.bing.com/th/id/OIP.jJI3bTJ-diLfKDHb9-vwmwHaE8?w=298&h=198&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+        rating:"4.9",
+        price:260,
+        inCart:false,
+        count:1
+    },
+]
+    
