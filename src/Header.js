@@ -1,95 +1,39 @@
 import React from 'react';
-import { useState } from 'react';
-import {Link} from "react-router-dom"
+import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { FaShoppingCart } from 'react-icons/fa';
 
+const Header = () => {
+  const cartItems = useSelector((state) => state.cart.items);
+  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
-export const LogInForm=()=>{
-
-    const [ passwordValue, setPasswordValue ]=useState("");
-    const [ emailValue,setEmailValue ]=useState("");
-
-
-    return(
-        <>
-           <div>Log in with</div>
-   
-           <input
-                type='email'
-                placeholder='email'
-                id='email'   
-                value={emailValue}
-                onChange={(e)=>{
-                    setEmailValue(e.target.value)
-                    }
-                }      
-           />
-
-           <input
-                type="password"
-                placeholder='password'
-                id='password'
-                value={passwordValue}
-                onChange={(e)=>{
-                    setPasswordValue(e.target.value)
-                  }
-                }
-           />
-
-           <button>
-               Submit
-           </button>
-        
-        </>
-    );
-};
-
-const Header=()=>{
-    return (
-        <div className='divHeader'>
-            <a>
-                 <img
-                     className='HeaderImage'
-                     src="https://i.pinimg.com/originals/e6/17/f1/e617f1bfb9af4d9cf132cd3dec0da072.jpg" 
-                 />   
-            </a>
-           
-           <div className='header'>
-
-              <div className="header1">
-                         <Link to="/home">
-                             <div>Home</div>
-                         </Link>     
-              </div>
-
-              <div className="header2">
-                      <Link to="/app">
-                             <div>About</div>
-                      </Link>
-              </div>
-
-              <div className="header3">
-                   <Link to="/appContact">
-                         <div>Contact</div>
-                    </Link>
-              </div>
-              <div className="header4">
-                    <Link to="/cart">
-                         <div>Cart</div>
-                    </Link>
-              </div>
-
-           </div>  
-
-           <div className='headerLog'>
-                <Link to="/login">
-                     <li>LogIn</li>
-                </Link>
-           </div>
-
-        </div>
-     
-    );     
-
+  return (
+    <header className="header">
+      <div className="header-content">
+        <NavLink to="/" className="logo">
+          FoodWeb
+        </NavLink>
+        <nav className="nav-links">
+          <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            Home
+          </NavLink>
+          <NavLink to="/menu" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            Menu
+          </NavLink>
+          <NavLink to="/about" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            About
+          </NavLink>
+          <NavLink to="/contact" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            Contact
+          </NavLink>
+        </nav>
+        <NavLink to="/cart" className="cart-icon">
+          <FaShoppingCart />
+          {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+        </NavLink>
+      </div>
+    </header>
+  );
 };
 
 export default Header;

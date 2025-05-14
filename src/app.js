@@ -1,96 +1,55 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './store';
 import Header from './Header';
 import Body from './Body';
-import CartApp from './cart';
-import CartAppFooter from './Footer';
+import Cart from './cart';
+import About from './About';
+import Contact from './Contact';
+import Footer from './Footer';
+import Menu from './Menu';
+import './index.css';
 
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { LogInForm } from "./Header";
+function App() {
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme || 'light';
+  });
 
-export const AppComponent=()=>{
-    return (
-        <>
-           <Header/>
-           <div>SearchHere</div>
-           <Body/>
-           <CartAppFooter/> 
-        </>
-    );     
-};
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
-export const App=()=>{
-    return (
-        <>
-           <div>Welcome to About tab</div>
-           <div>SearchHere</div>   
-        </>
-    );     
-};
+  const toggleTheme = () => {
+    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+  };
 
-export const AppContact=()=>{
-    return (
-        <>
-           <div>Welcome to Contact tab</div>
-           <div>SearchHere</div>   
-        </>
-    );     
-};
+  return (
+    <Provider store={store}>
+      <Router>
+        <div className="app">
+          <Header />
+          <Routes>
+            <Route path="/" element={<Body />} />
+            <Route path="/menu" element={<Menu />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/cart" element={<Cart />} />
+          </Routes>
+          <Footer />
+          <button 
+            className="theme-toggle" 
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+          >
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
+        </div>
+      </Router>
+    </Provider>
+  );
+}
 
-export const AppHome=()=>{
-    return (
-        <>
-           <div>Welcome to Home tab</div>
-           <div>SearchHere</div>   
-        </>
-    );     
-};
-
-export const AppCart=()=>{
-    return (
-        <>
-           <div>Welcome to Cart tab</div>
-           <div>SearchHere</div>   
-        </>
-    );     
-};
-
-const appRouter=createBrowserRouter([
-    //     {
-    //         path:"",
-    //         element:<LogInForm/>,
-    //    },
-        {
-                path:"/",
-                element:<AppComponent/>,
-        },
-        {
-            path:"/app",
-            element:<App/>,
-        },
-        {
-                path:"/login",
-                element:<LogInForm/>,
-        },
-        {
-            path:"/appContact",
-            element:<AppContact/>,
-        },
-        {
-            path:"/home",
-            element:<AppHome/>,
-        },
-        {
-            path:"/cart",
-            element:<CartApp/>,
-        },
-
-]);
-
-//select root element
-const rootElement=document.getElementById('root');
-
-//create root element
-const root=ReactDOM.createRoot(rootElement);
-
-root.render(<RouterProvider router={appRouter}/>);
+export default App;
