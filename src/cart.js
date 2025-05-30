@@ -74,7 +74,10 @@ const Cart = () => {
   return (
     <div className="cart">
       <div className="cart-header">
-        <h1>Your Cart</h1>
+        <div className="cart-title">
+          <h1>Your Cart</h1>
+          <span className="cart-badge">{cartItems.length}</span>
+        </div>
         <button className="clear-cart-btn" onClick={handleClearCart}>
           <FaTrash /> Clear Cart
         </button>

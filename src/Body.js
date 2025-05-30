@@ -1,8 +1,29 @@
+/**
+ * Body Component
+ * 
+ * This component represents the main content of the food ordering application.
+ * It includes:
+ * - A search bar for filtering menu items
+ * - Category filters for different food types
+ * - A grid of food cards with images, descriptions, and prices
+ * - Add to cart functionality
+ * 
+ * Features:
+ * - Responsive grid layout
+ * - Dynamic category filtering
+ * - Search functionality
+ * - Price comparison with MRP
+ * - Discount badges
+ * - Hover effects and animations
+ */
+
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addToCart } from './cartSlice';
 import { FaSearch, FaShoppingCart } from 'react-icons/fa';
+import './styles/Body.css';
 
+// Image URLs for different food categories
 const categoryImages = {
   Pizza: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=500",
   Burger: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500",
@@ -12,6 +33,7 @@ const categoryImages = {
   Dessert: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500"
 };
 
+// Sample menu items with their details
 const menuItems = [
   {
     id: 1,
@@ -67,7 +89,7 @@ const menuItems = [
     img: categoryImages.Dessert,
     category: "Dessert"
   },
-  // 100 more items
+  // Generate additional menu items
   ...Array.from({ length: 100 }, (_, i) => {
     const categories = ["Pizza", "Burger", "Pasta", "Chinese", "Starters", "Dessert"];
     const cat = categories[i % categories.length];
@@ -83,13 +105,18 @@ const menuItems = [
   })
 ];
 
+/**
+ * Main Body component that renders the food menu
+ */
 const Body = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const dispatch = useDispatch();
 
+  // Get unique categories for the filter
   const categories = ['All', ...new Set(menuItems.map(item => item.category))];
 
+  // Filter items based on search query and selected category
   const filteredItems = menuItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -97,26 +124,32 @@ const Body = () => {
     return matchesSearch && matchesCategory;
   });
 
+  /**
+   * Handles adding an item to the cart
+   * @param {Object} item - The menu item to add to cart
+   */
   const handleAddToCart = (item) => {
     dispatch(addToCart(item));
   };
 
   return (
     <div className="body">
+      {/* Header section with search */}
       <div className="body-header">
         <div className="search-container">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder="Search for your favorite food..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input"
           />
           <FaSearch className="search-icon" />
         </div>
-        <h1>Our Menu</h1>
+        <h1>Discover Delicious Food</h1>
       </div>
 
+      {/* Category filter section */}
       <div className="category-section">
         <div className="category-filter">
           {categories.map(category => (
@@ -131,11 +164,20 @@ const Body = () => {
         </div>
       </div>
 
+      {/* Food items grid */}
       <div className="food-grid">
         {filteredItems.map(item => (
           <div key={item.id} className="food-card">
             <div className="food-image-container">
-              <img src={item.img} alt={item.name} className="food-image" onError={e => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500'; }} />
+              <img 
+                src={item.img} 
+                alt={item.name} 
+                className="food-image" 
+                onError={e => { 
+                  e.target.onerror = null; 
+                  e.target.src = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500'; 
+                }} 
+              />
               {item.mrp > item.price && (
                 <div className="discount-badge">
                   {Math.round(((item.mrp - item.price) / item.mrp) * 100)}% OFF
@@ -162,6 +204,7 @@ const Body = () => {
         ))}
       </div>
 
+      {/* No results message */}
       {filteredItems.length === 0 && (
         <div className="no-results">
           <p>No items found matching your search.</p>
