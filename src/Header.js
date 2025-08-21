@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FaShoppingCart, FaUser, FaHome, FaInfoCircle, FaEnvelope, FaChevronDown, FaClipboardList } from 'react-icons/fa';
 import useAuthStore from './store/auth';
-import './styles/Header.css';
 
 // Define LOGO_URL directly as a placeholder
 const LOGO_URL = "https://via.placeholder.com/150"; // Placeholder URL
@@ -41,78 +40,77 @@ const Header = () => {
   };
 
   return (
-    <header className="header">
-      <div className="header-container">
+    <header className="bg-white shadow-md sticky top-0 z-50 w-full">
+      <div className="max-w-6xl mx-auto px-4 h-20 flex justify-between items-center">
         {/* Logo and App Name */}
-        <div className="logo-container">
-          <Link to="/" className="logo-link">
+        <div className="flex items-center flex-shrink-0">
+          <Link to="/" className="flex items-center no-underline gap-2">
             <img 
-              className="logo" 
+              className="h-12 w-auto transition-transform duration-300 hover:scale-105" 
               src="https://img.icons8.com/color/48/000000/restaurant.png" 
               alt="FoodWeb Logo" 
             />
-            <span className="app-name">FoodApp</span>
+            <span className="text-xl font-bold text-gray-700 ml-2">FoodApp</span>
           </Link>
         </div>
 
         {/* Navigation Links */}
         <nav>
-          <ul className="nav-links">
-            {/* <li className="px-4">Online Status: {onlineStatus ? "✅" : "🔴"}</li> */} {/* Removed display */}
+          <ul className="flex items-center gap-6 list-none m-0 p-0 flex-nowrap">
             <li>
-              <Link to="/" className="nav-link">
+              <Link to="/" className="text-gray-700 no-underline font-medium text-base px-4 py-2 rounded-md transition-all duration-300 relative whitespace-nowrap hover:text-blue-500 hover:after:w-full after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:transform after:-translate-x-1/2 after:w-0 after:h-0.5 after:bg-blue-500 after:transition-all after:duration-300">
                 <FaHome className="inline mr-2" />
                 Home
               </Link>
             </li>
             <li>
-              <Link to="/menu" className="nav-link">Menu</Link>
+              <Link to="/menu" className="text-gray-700 no-underline font-medium text-base px-4 py-2 rounded-md transition-all duration-300 relative whitespace-nowrap hover:text-blue-500 hover:after:w-full after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:transform after:-translate-x-1/2 after:w-0 after:h-0.5 after:bg-blue-500 after:transition-all after:duration-300">Menu</Link>
             </li>
             <li>
-              <Link to="/about" className="nav-link">
+              <Link to="/about" className="text-gray-700 no-underline font-medium text-base px-4 py-2 rounded-md transition-all duration-300 relative whitespace-nowrap hover:text-blue-500 hover:after:w-full after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:transform after:-translate-x-1/2 after:w-0 after:h-0.5 after:bg-blue-500 after:transition-all after:duration-300">
                 <FaInfoCircle className="inline mr-2" />
                 About
               </Link>
             </li>
             <li>
-              <Link to="/contact" className="nav-link">
+              <Link to="/contact" className="text-gray-700 no-underline font-medium text-base px-4 py-2 rounded-md transition-all duration-300 relative whitespace-nowrap hover:text-blue-500 hover:after:w-full after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:transform after:-translate-x-1/2 after:w-0 after:h-0.5 after:bg-blue-500 after:transition-all after:duration-300">
                 <FaEnvelope className="inline mr-2" />
                 Contact
               </Link>
             </li>
             <li>
-              <Link to="/cart" className="cart-link">
+              <Link to="/cart" className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md transition-colors duration-300 whitespace-nowrap relative hover:bg-blue-600">
                 <FaShoppingCart />
                 Cart
                 {cartItems.length > 0 && (
-                  <span className="cart-count">{cartItems.length}</span>
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full min-w-4 text-center leading-tight">{cartItems.length}</span>
                 )}
               </Link>
             </li>
             {isAuthenticated ? (
-              <li className="profile-dropdown-container">
+              <li className="relative">
                 <button 
-                  className="profile-button"
+                  className="bg-none border-none text-blue-500 font-medium text-base px-4 py-2 rounded-md transition-all duration-300 cursor-pointer flex items-center gap-2 hover:text-blue-600"
                   onClick={toggleProfileDropdown}
                 >
                   <FaUser />
                   <span>{user?.name || 'Profile'}</span>
-                  <FaChevronDown className={`dropdown-arrow ${isProfileDropdownOpen ? 'open' : ''}`} />
+                  <FaChevronDown className={`transition-transform duration-300 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isProfileDropdownOpen && (
-                  <ul className="profile-dropdown-menu">
-                    <li className="dropdown-header">
+                  <ul className="absolute top-full right-0 mt-1 bg-white shadow-lg rounded-lg list-none p-0 m-0 min-w-48 z-50 overflow-hidden">
+                    <li className="px-5 py-4 border-b border-gray-200 mb-2 text-sm text-gray-600">
                       Signed in as<br />
-                      <strong>{user?.name || 'User'}</strong>
-                      {user?.number && <p>{user.number}</p>}
+                      <strong className="block text-gray-800 text-base mt-1 font-bold">{user?.name || 'User'}</strong>
+                      {user?.number && <p className="text-sm text-gray-500 mt-1">{user.number}</p>}
                     </li>
                     <li>
-                      <Link to="/orders" className="dropdown-item" onClick={toggleProfileDropdown}>
+                      <Link to="/orders" className="flex items-center px-5 py-3 text-gray-700 no-underline text-sm transition-colors duration-200 cursor-pointer hover:bg-gray-100 hover:text-gray-900" onClick={toggleProfileDropdown}>
                          <FaClipboardList className="inline mr-2" /> Order History
                       </Link>
                     </li>
                     <li>
-                      <button className="dropdown-item" onClick={handleLogout}>
+                      <button className="flex items-center px-5 py-3 text-gray-700 text-sm transition-colors duration-200 cursor-pointer hover:bg-gray-100 hover:text-gray-900 bg-gray-50 w-full text-left border-none font-medium" onClick={handleLogout}>
                         <FaUser className="inline mr-2" /> Logout
                       </button>
                     </li>
@@ -122,7 +120,7 @@ const Header = () => {
             ) : (
               <li>
                 <button 
-                  className="login-btn"
+                  className="bg-green-500 text-white px-6 py-2 rounded-md font-medium border-none cursor-pointer transition-colors duration-300 whitespace-nowrap flex items-center gap-2 hover:bg-green-600"
                   onClick={handleLoginToggle}
                 >
                   <FaUser />

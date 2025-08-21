@@ -314,7 +314,7 @@ const Signup = () => {
                 to="/login"
                 className="font-medium text-orange-600 hover:text-orange-500 transition-colors duration-200"
               >
-                Sign in here
+                Log in here
               </Link>
             </p>
           </div>

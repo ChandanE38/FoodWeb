@@ -4,7 +4,6 @@ import { addToCart, removeFromCart, removeItemCompletely } from './cartSlice';
 import { menuItems } from './menuData';
 import { FaShoppingCart, FaPlus, FaMinus, FaTimes } from 'react-icons/fa';
 import toast from 'react-hot-toast';
-import '../src/index.css';
 
 const Menu = () => {
   const [searchQuery, setSearchQuery] = useState('');

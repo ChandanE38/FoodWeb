@@ -21,7 +21,6 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addToCart } from './cartSlice';
 import { FaSearch, FaShoppingCart } from 'react-icons/fa';
-import './styles/Body.css';
 
 // Image URLs for different food categories
 const categoryImages = {
@@ -133,29 +132,33 @@ const Body = () => {
   };
 
   return (
-    <div className="body">
+    <div className="max-w-6xl mx-auto p-8 bg-gray-50">
       {/* Header section with search */}
-      <div className="body-header">
-        <div className="search-container">
+      <div className="text-center mb-8">
+        <div className="relative max-w-2xl mx-auto mb-4">
           <input
             type="text"
             placeholder="Search for your favorite food..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
+            className="w-full px-6 py-4 pr-12 border-2 border-gray-200 rounded-full text-base transition-all duration-300 shadow-sm focus:outline-none focus:border-blue-500 focus:shadow-lg"
           />
-          <FaSearch className="search-icon" />
+          <FaSearch className="absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-500" />
         </div>
-        <h1>Discover Delicious Food</h1>
+        <h1 className="text-4xl text-gray-700 my-4 font-bold">Discover Delicious Food</h1>
       </div>
 
       {/* Category filter section */}
-      <div className="category-section">
-        <div className="category-filter">
+      <div className="mb-8">
+        <div className="flex flex-wrap gap-4 justify-center p-4 bg-white rounded-lg shadow-sm">
           {categories.map(category => (
             <button
               key={category}
-              className={`category-btn${selectedCategory === category ? ' active' : ''}`}
+              className={`px-6 py-3 border-none rounded-full font-medium cursor-pointer transition-all duration-300 hover:transform hover:-translate-y-0.5 ${
+                selectedCategory === category 
+                  ? 'bg-blue-500 text-white' 
+                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+              }`}
               onClick={() => setSelectedCategory(category)}
             >
               {category}
@@ -165,36 +168,36 @@ const Body = () => {
       </div>
 
       {/* Food items grid */}
-      <div className="food-grid">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 p-4">
         {filteredItems.map(item => (
-          <div key={item.id} className="food-card">
-            <div className="food-image-container">
+          <div key={item.id} className="bg-white rounded-2xl overflow-hidden shadow-md transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-xl">
+            <div className="relative h-48 overflow-hidden">
               <img 
                 src={item.img} 
                 alt={item.name} 
-                className="food-image" 
+                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" 
                 onError={e => { 
                   e.target.onerror = null; 
                   e.target.src = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500'; 
                 }} 
               />
               {item.mrp > item.price && (
-                <div className="discount-badge">
+                <div className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-2xl font-semibold text-sm">
                   {Math.round(((item.mrp - item.price) / item.mrp) * 100)}% OFF
                 </div>
               )}
             </div>
-            <div className="food-info">
-              <h3>{item.name}</h3>
-              <p>{item.description}</p>
-              <div className="price-info">
-                <span className="current-price">₹{item.price}</span>
+            <div className="p-6">
+              <h3 className="text-xl text-gray-700 mb-2 font-semibold">{item.name}</h3>
+              <p className="text-gray-500 text-sm mb-4 leading-6">{item.description}</p>
+              <div className="flex items-center gap-4 mb-4">
+                <span className="text-xl font-bold text-gray-700">₹{item.price}</span>
                 {item.mrp > item.price && (
-                  <span className="mrp">₹{item.mrp}</span>
+                  <span className="text-base text-gray-400 line-through">₹{item.mrp}</span>
                 )}
               </div>
               <button 
-                className="add-to-cart-btn"
+                className="w-full px-3 py-3 bg-blue-500 text-white border-none rounded-lg font-semibold flex items-center justify-center gap-2 cursor-pointer transition-colors duration-300 hover:bg-blue-600"
                 onClick={() => handleAddToCart(item)}
               >
                 <FaShoppingCart /> Add to Cart
@@ -206,10 +209,10 @@ const Body = () => {
 
       {/* No results message */}
       {filteredItems.length === 0 && (
-        <div className="no-results">
-          <p>No items found matching your search.</p>
+        <div className="text-center p-12 bg-white rounded-lg shadow-sm">
+          <p className="text-gray-600 text-lg mb-4">No items found matching your search.</p>
           <button 
-            className="clear-search-btn"
+            className="px-6 py-3 bg-blue-500 text-white border-none rounded-lg font-semibold cursor-pointer transition-colors duration-300 hover:bg-blue-600"
             onClick={() => {
               setSearchQuery('');
               setSelectedCategory('All');

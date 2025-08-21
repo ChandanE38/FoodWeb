@@ -9,7 +9,6 @@ import About from './About';
 import Contact from './Contact';
 import Footer from './Footer';
 import Menu from './Menu';
-import './index.css';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import { Toaster } from 'react-hot-toast';
