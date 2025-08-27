@@ -11,6 +11,10 @@ import Footer from './Footer';
 import Menu from './Menu';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfService from './components/TermsOfService';
+import RefundPolicy from './components/RefundPolicy';
+import ShippingPolicy from './components/ShippingPolicy';
 import { Toaster } from 'react-hot-toast';
 import useAuthStore from './store/auth';
 
@@ -55,6 +59,10 @@ const AppContent = () => {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/refund" element={<RefundPolicy />} />
+        <Route path="/shipping" element={<ShippingPolicy />} />
       </Routes>
 
       {!isAuthPage && <Footer />}

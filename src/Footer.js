@@ -59,6 +59,9 @@ const Footer = () => {
             <p className="text-gray-300 text-sm mb-2 leading-6"><a href="/menu" className="text-gray-300 hover:text-blue-500 transition-colors duration-300">Menu</a></p>
             <p className="text-gray-300 text-sm mb-2 leading-6"><a href="/contact" className="text-gray-300 hover:text-blue-500 transition-colors duration-300">Contact</a></p>
             <p className="text-gray-300 text-sm mb-2 leading-6"><a href="/privacy" className="text-gray-300 hover:text-blue-500 transition-colors duration-300">Privacy Policy</a></p>
+            <p className="text-gray-300 text-sm mb-2 leading-6"><a href="/terms" className="text-gray-300 hover:text-blue-500 transition-colors duration-300">Terms of Service</a></p>
+            <p className="text-gray-300 text-sm mb-2 leading-6"><a href="/refund" className="text-gray-300 hover:text-blue-500 transition-colors duration-300">Refund Policy</a></p>
+            <p className="text-gray-300 text-sm mb-2 leading-6"><a href="/shipping" className="text-gray-300 hover:text-blue-500 transition-colors duration-300">Delivery Policy</a></p>
           </div>
         </div>
 
