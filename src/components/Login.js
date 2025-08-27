@@ -62,21 +62,33 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Here you would typically make an API call to your backend
-      const userData = {
-        email: formData.email,
-        name: formData.email.split('@')[0], // Simulate user name
-        id: Date.now().toString()
-      };
-      
-      login(userData);
-      toast.success('Welcome back! 🎉');
-      navigate('/');
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:4000/api'}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store token in localStorage
+        localStorage.setItem('token', data.token);
+        
+        // Update auth store
+        login(data.user);
+        toast.success('Welcome back! 🎉');
+        navigate('/');
+      } else {
+        toast.error(data.msg || 'Login failed. Please check your credentials.');
+      }
     } catch (err) {
-      toast.error('Login failed. Please check your credentials.');
+      console.error('Login error:', err);
+      toast.error('Network error. Please check your connection.');
     } finally {
       setIsLoading(false);
     }

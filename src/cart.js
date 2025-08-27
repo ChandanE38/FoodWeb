@@ -7,6 +7,8 @@ const Cart = () => {
   const cartItems = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState(null);
 
   const handleQuantityChange = (id, change) => {
     const item = cartItems.find(item => item.id === id);
@@ -30,34 +32,223 @@ const Cart = () => {
   const deliveryFee = subtotal > 0 ? 40 : 0;
   const total = subtotal + deliveryFee;
 
-  const handleCheckout = () => {
-    if (paymentMethod === 'razorpay') {
-      const options = {
-        key: 'rzp_test_YOUR_KEY_HERE',
-        amount: total * 100,
-        currency: 'INR',
-        name: 'Food Delivery',
-        description: 'Payment for your order',
-        handler: function (response) {
-          console.log(response);
-          alert('Payment successful!');
-          dispatch(clearCart());
-        },
-        prefill: {
-          name: 'Customer Name',
-          email: 'customer@example.com',
-          contact: '9999999999'
-        },
-        theme: {
-          color: '#e74c3c'
-        }
-      };
+  // API functions for payment processing
+  const createRazorpayOrder = async (amount) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Authentication required. Please login first.');
+      }
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
+      const response = await fetch('http://localhost:4000/api/payment/order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': token
+        },
+        body: JSON.stringify({
+          amount: amount,
+          currency: 'INR'
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.msg || `HTTP ${response.status}: Failed to create order`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating order:', error);
+      throw error;
+    }
+  };
+
+  const verifyRazorpayPayment = async (paymentData) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Authentication required. Please login first.');
+      }
+
+      const response = await fetch('http://localhost:4000/api/payment/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': token
+        },
+        body: JSON.stringify({
+          orderId: paymentData.razorpay_order_id,
+          paymentId: paymentData.razorpay_payment_id,
+          signature: paymentData.razorpay_signature
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.msg || `HTTP ${response.status}: Payment verification failed`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error verifying payment:', error);
+      throw error;
+    }
+  };
+
+  const handleCheckout = async () => {
+    // Check authentication for online payments
+    if (paymentMethod === 'razorpay') {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setPaymentError('Please login to proceed with online payment.');
+        return;
+      }
+    }
+
+    if (paymentMethod === 'razorpay') {
+      try {
+        setIsProcessingPayment(true);
+        setPaymentError(null);
+
+        // Create order on backend first
+        const orderData = await createRazorpayOrder(total);
+
+        const options = {
+          key: orderData.key, // Use the key returned from backend
+          amount: orderData.amount,
+          currency: orderData.currency,
+          order_id: orderData.orderId,
+          name: 'FoodWeb - Delicious Food Delivery',
+          description: `Payment for food order - Total: ₹${total}`,
+          image: 'https://cdn-icons-png.flaticon.com/512/3595/3595455.png',
+          handler: async function (response) {
+            try {
+              setIsProcessingPayment(true);
+              // Verify payment on backend
+              await verifyRazorpayPayment(response);
+              
+              // Clear cart after successful payment
+              dispatch(clearCart());
+              
+              // Show success message
+              alert('🎉 Payment successful! Your order has been placed.\nPayment ID: ' + response.razorpay_payment_id);
+              
+            } catch (error) {
+              setPaymentError('Payment verification failed. Please contact support with Payment ID: ' + response.razorpay_payment_id);
+              console.error('Payment verification error:', error);
+            } finally {
+              setIsProcessingPayment(false);
+            }
+          },
+          config: {
+            display: {
+              blocks: {
+                utib: {
+                  name: 'UPI Apps (Recommended)',
+                  instruments: [
+                    {
+                      method: 'upi',
+                      flows: ['collect', 'intent']
+                    }
+                  ]
+                },
+                wallet: {
+                  name: 'Digital Wallets',
+                  instruments: [
+                    {
+                      method: 'wallet',
+                      wallets: [
+                        'paytm', 'mobikwik', 'amazonpay', 'freecharge', 
+                        'jiomoney', 'airtel_money'
+                      ]
+                    }
+                  ]
+                },
+                card: {
+                  name: 'Credit/Debit Cards',
+                  instruments: [
+                    {
+                      method: 'card'
+                    }
+                  ]
+                },
+                banks: {
+                  name: 'Net Banking',
+                  instruments: [
+                    {
+                      method: 'netbanking'
+                    }
+                  ]
+                }
+              },
+              sequence: ['block.utib', 'block.wallet', 'block.card', 'block.banks'],
+              preferences: {
+                show_default_blocks: true
+              }
+            }
+          },
+          method: {
+            upi: true,
+            card: true,
+            netbanking: true,
+            wallet: true,
+            emi: false,
+            paylater: false
+          },
+          prefill: {
+            name: 'Customer',
+            email: 'customer@foodweb.com',
+            contact: '9999999999'
+          },
+          theme: {
+            color: '#f97316',
+            backdrop_color: 'rgba(0,0,0,0.6)'
+          },
+          modal: {
+            ondismiss: function() {
+              setIsProcessingPayment(false);
+              console.log('Payment cancelled by user');
+            },
+            escape: true,
+            animation: true
+          },
+          retry: {
+            enabled: true,
+            max_count: 3
+          }
+        };
+
+        // Check if Razorpay is loaded
+        if (typeof window.Razorpay === 'undefined') {
+          throw new Error('Razorpay SDK not loaded. Please refresh the page.');
+        }
+
+        const rzp = new window.Razorpay(options);
+        
+        rzp.on('payment.failed', function (response) {
+          setPaymentError(`Payment failed: ${response.error.description || 'Unknown error'}`);
+          console.error('Payment failed:', response.error);
+          setIsProcessingPayment(false);
+        });
+
+        rzp.open();
+        
+      } catch (error) {
+        if (error.message.includes('Authentication') || error.message.includes('authorization denied')) {
+          setPaymentError('Session expired. Please login again to continue.');
+        } else if (error.message.includes('Payment gateway not configured')) {
+          setPaymentError('Payment system is currently unavailable. Please try again later.');
+        } else {
+          setPaymentError('Failed to initiate payment. Please check your internet connection and try again.');
+        }
+        console.error('Payment initiation error:', error);
+        setIsProcessingPayment(false);
+      }
     } else {
-      alert('Order placed successfully! Pay on delivery.');
+      // Cash on delivery
       dispatch(clearCart());
+      alert('✅ Order placed successfully! Pay on delivery.');
     }
   };
 
@@ -130,8 +321,8 @@ const Cart = () => {
 
         <div className="mt-5">
           <h3 className="mb-3 text-base font-medium">Select Payment Method</h3>
-          <div className="flex gap-4 mb-5">
-            <label className="flex items-center gap-2 cursor-pointer">
+          <div className="space-y-3 mb-5">
+            <label className="flex items-center gap-3 cursor-pointer p-3 border rounded-lg hover:bg-gray-50 transition-colors">
               <input
                 type="radio"
                 name="payment"
@@ -139,11 +330,20 @@ const Cart = () => {
                 checked={paymentMethod === 'razorpay'}
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 className="accent-orange-500"
+                disabled={isProcessingPayment}
               />
-              <FaCreditCard className="text-blue-500" />
-              <span>Pay Online</span>
+              <div className="flex items-center gap-2">
+                <FaCreditCard className="text-blue-500" />
+                <div>
+                  <div className="font-medium">Pay Online</div>
+                  <div className="text-sm text-gray-500">UPI, Cards, Net Banking, Wallets</div>
+                  <div className="text-xs text-gray-400 mt-1">
+                    💳 Google Pay • PhonePe • Paytm • Amazon Pay • Cards & More
+                  </div>
+                </div>
+              </div>
             </label>
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-center gap-3 cursor-pointer p-3 border rounded-lg hover:bg-gray-50 transition-colors">
               <input
                 type="radio"
                 name="payment"
@@ -151,18 +351,36 @@ const Cart = () => {
                 checked={paymentMethod === 'cod'}
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 className="accent-orange-500"
+                disabled={isProcessingPayment}
               />
-              <FaMoneyBillWave className="text-green-500" />
-              <span>Cash on Delivery</span>
+              <div className="flex items-center gap-2">
+                <FaMoneyBillWave className="text-green-500" />
+                <div>
+                  <div className="font-medium">Cash on Delivery</div>
+                  <div className="text-sm text-gray-500">Pay when your order arrives</div>
+                </div>
+              </div>
             </label>
           </div>
         </div>
 
+        {paymentError && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {paymentError}
+          </div>
+        )}
+
         <button 
-          className="w-full bg-orange-500 text-white border-none px-4 py-4 rounded-lg text-base font-semibold cursor-pointer transition-colors duration-200 hover:bg-orange-600"
+          className="w-full bg-orange-500 text-white border-none px-4 py-4 rounded-lg text-base font-semibold cursor-pointer transition-colors duration-200 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleCheckout}
+          disabled={isProcessingPayment}
         >
-          {paymentMethod === 'razorpay' ? 'Pay Now' : 'Place Order'}
+          {isProcessingPayment 
+            ? 'Processing...' 
+            : paymentMethod === 'razorpay' 
+              ? '💳 Pay Now' 
+              : '📦 Place Order'
+          }
         </button>
       </div>
     </div>

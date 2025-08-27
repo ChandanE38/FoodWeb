@@ -81,21 +81,34 @@ const Signup = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Here you would typically make an API call to your backend
-      const userData = {
-        name: formData.name,
-        email: formData.email,
-        id: Date.now().toString()
-      };
-      
-      login(userData);
-      toast.success('Account created successfully! 🎉');
-      navigate('/');
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:4000/api'}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store token in localStorage
+        localStorage.setItem('token', data.token);
+        
+        // Update auth store
+        login(data.user);
+        toast.success('Account created successfully! 🎉');
+        navigate('/');
+      } else {
+        toast.error(data.msg || 'Signup failed. Please try again.');
+      }
     } catch (err) {
-      toast.error('Signup failed. Please try again.');
+      console.error('Signup error:', err);
+      toast.error('Network error. Please check your connection.');
     } finally {
       setIsLoading(false);
     }

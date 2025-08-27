@@ -3,10 +3,29 @@ const Payment = require('../models/Payment');
 const User = require('../models/User');
 const crypto = require('crypto');
 
+// Validate environment variables before initializing Razorpay
+if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+  console.error('❌ Razorpay configuration error:');
+  console.error('   RAZORPAY_KEY_ID:', process.env.RAZORPAY_KEY_ID ? '✅ Set' : '❌ Missing');
+  console.error('   RAZORPAY_KEY_SECRET:', process.env.RAZORPAY_KEY_SECRET ? '✅ Set' : '❌ Missing');
+  console.error('   Please check your .env file and set actual Razorpay credentials.');
+  console.error('   Get your keys from: https://dashboard.razorpay.com/app/keys');
+  throw new Error('Razorpay credentials not configured. Please set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env file.');
+}
+
+// Check for placeholder values
+if (process.env.RAZORPAY_KEY_ID.includes('REPLACE') || process.env.RAZORPAY_KEY_SECRET.includes('REPLACE')) {
+  console.error('❌ Razorpay credentials contain placeholder values.');
+  console.error('   Please replace placeholder values with actual credentials from Razorpay dashboard.');
+  throw new Error('Razorpay credentials contain placeholder values. Please set actual keys from Razorpay dashboard.');
+}
+
 const instance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
+
+console.log('✅ Razorpay initialized successfully with key:', process.env.RAZORPAY_KEY_ID.substring(0, 15) + '...');
 
 // @desc    Create Razorpay order
 // @route   POST /api/payment/order
@@ -136,4 +155,4 @@ exports.verifyPayment = async (req, res) => {
     console.error('Error verifying payment:', err);
     res.status(500).json({ msg: 'Payment verification error', error: err.message });
   }
-}; 
+};
