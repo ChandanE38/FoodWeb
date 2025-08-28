@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+
+# Policy Pages - Important for Payment Gateway Compliance
+Allow: /privacy
+Allow: /terms
+Allow: /refund
+Allow: /shipping
+Allow: /contact
+
+# Main Pages
+Allow: /about
+Allow: /menu
+Allow: /
+
+# Disallow admin and sensitive areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /backend/
+
+# Sitemap
+Sitemap: https://foodweb.com/sitemap.xml
+
+# Website Information
+# Business: FoodWeb Food Delivery Services
+# Contact: support@foodweb.com
+# Payment Processor: Razorpay Software Private Limited

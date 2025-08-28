@@ -7,6 +7,7 @@ import Body from './Body';
 import Cart from './cart';
 import About from './About';
 import Contact from './Contact';
+import ContactUs from './components/ContactUs';
 import Footer from './Footer';
 import Menu from './Menu';
 import Login from './components/Login';
@@ -57,7 +58,7 @@ const AppContent = () => {
         <Route path="/" element={isAuthenticated ? <Body /> : <Navigate to="/login" />} />
         <Route path="/menu" element={isAuthenticated ? <Menu /> : <Navigate to="/login" />} />
         <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/contact" element={<ContactUs />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfService />} />

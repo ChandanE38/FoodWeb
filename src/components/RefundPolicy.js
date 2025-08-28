@@ -50,6 +50,10 @@ const RefundPolicy = () => {
                 <h4 className="font-semibold text-blue-800 mb-2">Step 3: Resolution</h4>
                 <p className="text-blue-700">Approved refunds are processed within 5-7 business days to your original payment method</p>
               </div>
+              <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                <h4 className="font-semibold text-blue-800 mb-2">Step 4: Confirmation</h4>
+                <p className="text-blue-700">You will receive email and SMS confirmation once the refund is initiated</p>
+              </div>
             </section>
 
             <section className="mb-8">
@@ -138,15 +142,84 @@ const RefundPolicy = () => {
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">9. Dispute Resolution</h2>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">9. Chargeback Policy</h2>
               <p className="mb-4">
-                If you're not satisfied with our refund decision, you can escalate the matter to our 
-                senior customer support team. We commit to resolving all refund disputes within 7-10 business days.
+                We take chargebacks seriously and have established clear policies to protect both 
+                customers and our business:
+              </p>
+              <div className="bg-red-50 p-4 rounded-lg mb-4">
+                <h4 className="font-semibold text-red-800 mb-2">Important Notice:</h4>
+                <p className="text-red-700">
+                  Initiating a chargeback without first contacting our customer support may result 
+                  in account suspension and may affect your ability to place future orders.
+                </p>
+              </div>
+              <ul className="list-disc pl-6 mb-4 space-y-2">
+                <li><strong>Before Initiating Chargeback:</strong> Contact our support team within 48 hours of any issue</li>
+                <li><strong>Valid Chargeback Reasons:</strong> Non-delivery of order, unauthorized charges, or service not as described</li>
+                <li><strong>Chargeback Investigation:</strong> We will provide evidence of service delivery and order fulfillment to payment processors</li>
+                <li><strong>False Chargebacks:</strong> Customers who initiate fraudulent chargebacks will have accounts permanently suspended</li>
+                <li><strong>Documentation:</strong> All order communications, delivery confirmations, and service records are maintained for dispute resolution</li>
+              </ul>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">10. Business Information</h2>
+              <p className="mb-4">
+                This refund policy is implemented by:
+              </p>
+              <div className="bg-gray-100 p-4 rounded-lg mb-4">
+                <p><strong>Business Name:</strong> FoodWeb Food Delivery Services</p>
+                <p><strong>Business Registration:</strong> [Your Business Registration Number]</p>
+                <p><strong>GST Registration:</strong> [Your GST Number]</p>
+                <p><strong>FSSAI License:</strong> [Your FSSAI License Number]</p>
+                <p><strong>Registered Address:</strong> [Your Complete Business Address]</p>
+                <p><strong>Website:</strong> https://foodweb.com</p>
+                <p><strong>Payment Processor:</strong> Razorpay Software Private Limited</p>
+              </div>
+              <p className="mb-4">
+                We operate in full compliance with Consumer Protection Act, 2019, RBI guidelines 
+                for payment aggregators, and other applicable regulations.
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">10. Policy Updates</h2>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">11. Dispute Resolution</h2>
+              <p className="mb-4">
+                If you're not satisfied with our refund decision, you can escalate the matter through 
+                the following channels:
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-2">
+                <li><strong>Level 1:</strong> Contact our customer support team (response within 24 hours)</li>
+                <li><strong>Level 2:</strong> Escalate to senior customer support manager (response within 48 hours)</li>
+                <li><strong>Level 3:</strong> Contact our grievance officer at grievance@foodweb.com</li>
+                <li><strong>Level 4:</strong> File complaint with National Consumer Helpline (1915) if unsatisfied</li>
+              </ul>
+              <p className="mb-4">
+                We commit to resolving all refund disputes within 7-10 business days and maintaining 
+                complete transparency throughout the process.
+              </p>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">12. Contact for Refunds</h2>
+              <p className="mb-4">
+                To request a refund or report an issue with your order:
+              </p>
+              <div className="bg-gray-100 p-4 rounded-lg">
+                <p><strong>Primary Support:</strong> support@foodweb.com</p>
+                <p><strong>Refund Helpline:</strong> +91-[Your Phone Number]</p>
+                <p><strong>WhatsApp Support:</strong> +91-[Your WhatsApp Number]</p>
+                <p><strong>Grievance Officer:</strong> grievance@foodweb.com</p>
+                <p><strong>Business Address:</strong> [Your Complete Registered Address]</p>
+                <p><strong>Support Hours:</strong> 9:00 AM - 11:00 PM (All days)</p>
+                <p><strong>Emergency Support:</strong> 24/7 for critical payment issues</p>
+                <p><strong>Response Time:</strong> Maximum 24 hours for refund queries</p>
+              </div>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">13. Policy Updates</h2>
               <p className="mb-4">
                 This refund policy may be updated from time to time. We will notify customers of any 
                 significant changes through email or app notifications.

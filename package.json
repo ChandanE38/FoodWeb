@@ -11,6 +11,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@parcel/packager-raw-url": "^2.13.2",
+    "@parcel/transformer-jsonld": "^2.13.2",
     "@tailwindcss/postcss": "^4.1.12",
     "autoprefixer": "^10.4.21",
     "lightningcss": "^1.30.1",
