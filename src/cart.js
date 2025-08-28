@@ -40,7 +40,7 @@ const Cart = () => {
         throw new Error('Authentication required. Please login first.');
       }
 
-      const response = await fetch('http://localhost:4000/api/payment/order', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://localhost:4001/api'}/payment/order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ const Cart = () => {
         throw new Error('Authentication required. Please login first.');
       }
 
-      const response = await fetch('http://localhost:4000/api/payment/verify', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://localhost:4001/api'}/payment/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

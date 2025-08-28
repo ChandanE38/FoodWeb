@@ -21,7 +21,7 @@ const OrderHistory = () => {
         setError(null);
         
         // Replace with your actual backend API endpoint for fetching user orders
-        const response = await axios.get('/api/orders/myorders', {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL || 'https://localhost:4001/api'}/orders/myorders`, {
           headers: {
             // Assuming you use a token for authentication
             'x-auth-token': localStorage.getItem('token'), // Or wherever you store your auth token

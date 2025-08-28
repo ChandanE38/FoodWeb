@@ -13,10 +13,14 @@ if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
   throw new Error('Razorpay credentials not configured. Please set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env file.');
 }
 
-// Check for placeholder values
-if (process.env.RAZORPAY_KEY_ID.includes('REPLACE') || process.env.RAZORPAY_KEY_SECRET.includes('REPLACE')) {
+// Check for placeholder values that need to be replaced
+const hasPlaceholders = process.env.RAZORPAY_KEY_ID.includes('YOUR_ACTUAL_KEY_FROM_DASHBOARD') || 
+                       process.env.RAZORPAY_KEY_SECRET.includes('YOUR_ACTUAL_SECRET_FROM_DASHBOARD');
+
+if (hasPlaceholders) {
   console.error('❌ Razorpay credentials contain placeholder values.');
   console.error('   Please replace placeholder values with actual credentials from Razorpay dashboard.');
+  console.error('   Visit: https://dashboard.razorpay.com/app/keys to get your credentials.');
   throw new Error('Razorpay credentials contain placeholder values. Please set actual keys from Razorpay dashboard.');
 }
 

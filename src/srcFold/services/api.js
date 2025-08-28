@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:4000/api';
+// Use environment variable for API URL with HTTPS support
+const API_URL = process.env.REACT_APP_API_URL || 'https://localhost:4001/api';
+
+console.log('API_URL configured:', API_URL);
 
 // Create axios instance with default config
 const api = axios.create({

@@ -2,8 +2,9 @@
   "name": "crush",
   "version": "1.0.0",
   "scripts": {
-    "start": "parcel index.html --port 1234",
-    "dev": "parcel index.html --port 1234 --hmr-port 1235",
+    "start": "parcel index.html --port 1234 --https",
+    "dev": "parcel index.html --port 1234 --hmr-port 1235 --https",
+    "dev-http": "parcel index.html --port 1234 --hmr-port 1235",
     "build": "parcel build index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
