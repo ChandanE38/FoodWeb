@@ -62,7 +62,7 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://localhost:4001/api'}/auth/login`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:4000/api'}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ const Login = () => {
         toast.success('Welcome back! 🎉');
         navigate('/');
       } else {
-        toast.error(data.msg || 'Login failed. Please check your credentials.');
+        toast.error(data.message || data.msg || 'Login failed. Please check your credentials.');
       }
     } catch (err) {
       console.error('Login error:', err);

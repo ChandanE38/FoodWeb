@@ -81,7 +81,7 @@ const Signup = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://localhost:4001/api'}/auth/register`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:4000/api'}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ const Signup = () => {
         toast.success('Account created successfully! 🎉');
         navigate('/');
       } else {
-        toast.error(data.msg || 'Signup failed. Please try again.');
+        toast.error(data.message || data.msg || 'Signup failed. Please try again.');
       }
     } catch (err) {
       console.error('Signup error:', err);

@@ -1,9 +1,9 @@
-const Razorpay = require('razorpay');
 const Payment = require('../models/Payment');
 const User = require('../models/User');
 const crypto = require('crypto');
+const Razorpay = require('razorpay');
 
-// Validate environment variables before initializing Razorpay
+// Check if Razorpay credentials are configured
 if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
   console.error('❌ Razorpay configuration error:');
   console.error('   RAZORPAY_KEY_ID:', process.env.RAZORPAY_KEY_ID ? '✅ Set' : '❌ Missing');
@@ -13,9 +13,9 @@ if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
   throw new Error('Razorpay credentials not configured. Please set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env file.');
 }
 
-// Check for placeholder values that need to be replaced
-const hasPlaceholders = process.env.RAZORPAY_KEY_ID.includes('YOUR_ACTUAL_KEY_FROM_DASHBOARD') || 
-                       process.env.RAZORPAY_KEY_SECRET.includes('YOUR_ACTUAL_SECRET_FROM_DASHBOARD');
+// Check for placeholder values
+const hasPlaceholders = process.env.RAZORPAY_KEY_ID.includes('YOUR_ACTUAL_KEY_FROM_DASHBOARD') ||
+                        process.env.RAZORPAY_KEY_SECRET.includes('YOUR_ACTUAL_SECRET_FROM_DASHBOARD');
 
 if (hasPlaceholders) {
   console.error('❌ Razorpay credentials contain placeholder values.');
@@ -24,6 +24,7 @@ if (hasPlaceholders) {
   throw new Error('Razorpay credentials contain placeholder values. Please set actual keys from Razorpay dashboard.');
 }
 
+// Initialize Razorpay
 const instance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -35,6 +36,15 @@ console.log('✅ Razorpay initialized successfully with key:', process.env.RAZOR
 // @route   POST /api/payment/order
 // @access  Private (requires authentication)
 exports.createOrder = async (req, res) => {
+  console.log('Payment order creation attempt:', {
+    body: req.body,
+    user: req.user,
+    headers: {
+      'x-auth-token': req.header('x-auth-token') ? 'Present' : 'Missing',
+      'content-type': req.header('content-type')
+    }
+  });
+  
   const { amount, currency = 'INR' } = req.body;
   const userId = req.user.id;
 
@@ -53,7 +63,7 @@ exports.createOrder = async (req, res) => {
     const options = {
       amount: Math.round(amount * 100), // amount in smallest currency unit
       currency,
-      receipt: `receipt_${Date.now()}_${userId}`,
+      receipt: `fd_${Date.now()}_${userId.slice(-8)}`, // 'fd' + timestamp + last 8 chars of userId (max 40 chars)
       payment_capture: 1,
       notes: {
         user_id: userId,
@@ -67,11 +77,11 @@ exports.createOrder = async (req, res) => {
     // Save payment details to database with 'pending' status
     const payment = new Payment({
       user: userId,
-      order: order.id,
+      razorpayOrderId: order.id, // Store Razorpay order ID as string
       paymentMethod: 'Razorpay',
       amount: amount,
       currency,
-      transactionId: 'pending',
+      transactionId: `pending_${order.id}`, // Use order ID to make it unique
       status: 'pending',
     });
     await payment.save();
@@ -87,8 +97,18 @@ exports.createOrder = async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Error creating Razorpay order:', err);
-    res.status(500).json({ msg: 'Failed to create payment order', error: err.message });
+    console.error('Error creating Razorpay order:', {
+      error: err?.message || 'Unknown error',
+      stack: err?.stack || 'No stack trace available',
+      name: err?.name || 'Unknown error type',
+      userId: req.user?.id,
+      requestBody: req.body,
+      fullError: err
+    });
+    res.status(500).json({ 
+      msg: 'Failed to create payment order', 
+      error: process.env.NODE_ENV === 'development' ? (err?.message || 'Internal server error') : 'Internal server error'
+    });
   }
 };
 
@@ -111,7 +131,7 @@ exports.verifyPayment = async (req, res) => {
     if (digest === signature) {
       // Payment is successful, update payment status in database
       const payment = await Payment.findOneAndUpdate(
-        { order: orderId },
+        { razorpayOrderId: orderId }, // Use razorpayOrderId field
         { 
           $set: { 
             transactionId: paymentId, 
@@ -142,7 +162,7 @@ exports.verifyPayment = async (req, res) => {
     } else {
       // Payment verification failed
       await Payment.findOneAndUpdate(
-        { order: orderId },
+        { razorpayOrderId: orderId }, // Use razorpayOrderId field
         { 
           $set: { 
             status: 'failed',

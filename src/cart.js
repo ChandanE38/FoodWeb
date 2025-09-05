@@ -40,7 +40,7 @@ const Cart = () => {
         throw new Error('Authentication required. Please login first.');
       }
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://localhost:4001/api'}/payment/order`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:4000/api'}/payment/order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ const Cart = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.msg || `HTTP ${response.status}: Failed to create order`);
+        throw new Error(errorData.message || errorData.msg || `HTTP ${response.status}: Failed to create order`);
       }
 
       return await response.json();
@@ -71,7 +71,7 @@ const Cart = () => {
         throw new Error('Authentication required. Please login first.');
       }
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://localhost:4001/api'}/payment/verify`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:4000/api'}/payment/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ const Cart = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.msg || `HTTP ${response.status}: Payment verification failed`);
+        throw new Error(errorData.message || errorData.msg || `HTTP ${response.status}: Payment verification failed`);
       }
 
       return await response.json();

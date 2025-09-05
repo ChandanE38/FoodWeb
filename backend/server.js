@@ -9,10 +9,16 @@ const fs = require('fs');
 const path = require('path');
 const authRoutes = require('./routes/authRoutes'); // Import auth routes
 const cartRoutes = require('./routes/cartRoutes');
-const paymentRoutes = require('./routes/paymentRoutes'); // Import payment routes
 const orderRoutes = require('./routes/orderRoutes'); // Import order routes
 
-dotenv.config();
+// Configure Mongoose to suppress deprecation warnings
+mongoose.set('strictQuery', false); // Prepare for Mongoose 7 default behavior
+
+const result = dotenv.config({ path: path.join(__dirname, '.env') });
+console.log('Dotenv result:', result);
+console.log('RAZORPAY_KEY_ID:', process.env.RAZORPAY_KEY_ID);
+console.log('RAZORPAY_KEY_SECRET:', process.env.RAZORPAY_KEY_SECRET);
+console.log('JWT_SECRET:', process.env.JWT_SECRET ? '✅ Set' : '❌ Missing');
 
 const app = express();
 
@@ -23,9 +29,9 @@ app.use(helmet());
 app.use(express.json({ limit: '10mb' })); // Adjust limit as needed
 app.use(express.urlencoded({ extended: true, limit: '10mb' })); // Adjust limit as needed
 
-// CORS configuration for HTTPS compliance
+// CORS configuration for development and production
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'https://localhost:1234',
+  origin: process.env.CORS_ORIGIN || 'http://localhost:1234',
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -45,9 +51,10 @@ const apiLimiter = rateLimit({
 app.use('/api/', apiLimiter);
 
 // Mount routes
+app.use('/api/payment', require('./routes/paymentRoutes'));
 app.use('/api/auth', authRoutes);
 app.use('/api/cart', cartRoutes);
-app.use('/api/payment', paymentRoutes);
+// app.use('/api/payment', paymentRoutes); // Payment integration removed
 app.use('/api/orders', orderRoutes); // Mount order routes
 
 // Simple route for testing
@@ -88,14 +95,22 @@ const createSelfSignedCert = () => {
     // Generate private key
     execSync(`openssl genrsa -out "${keyPath}" 2048`, { stdio: 'inherit' });
     
-    // Generate certificate
-    execSync(`openssl req -new -x509 -key "${keyPath}" -out "${certPath}" -days 365 -subj "/C=US/ST=State/L=City/O=FoodWeb/CN=localhost"`, { stdio: 'inherit' });
+    // Generate certificate with SAN for localhost
+    const subj = '/C=US/ST=State/L=City/O=FoodWeb/CN=localhost';
+    const san = 'subjectAltName=DNS:localhost,DNS:*.localhost,IP:127.0.0.1';
+    execSync(`openssl req -new -x509 -key "${keyPath}" -out "${certPath}" -days 365 -subj "${subj}" -extensions SAN -config <(echo '[SAN]'; echo '${san}')`, { 
+      stdio: 'inherit',
+      shell: true 
+    });
     
     console.log('✅ Self-signed SSL certificates generated for development');
+    console.log('🔧 To avoid browser warnings, add the certificate to your trusted root store');
+    console.log(`📄 Certificate location: ${certPath}`);
     return { cert: certPath, key: keyPath };
   } catch (error) {
-    console.log('⚠️  OpenSSL not found. Running HTTP server instead.');
-    console.log('📝 To enable HTTPS, install OpenSSL and restart the server.');
+    console.log('⚠️  OpenSSL not found or certificate generation failed.');
+    console.log('📝 For HTTPS in development, install OpenSSL and restart the server.');
+    console.log('💡 Alternatively, use HTTP for development (set ENABLE_HTTPS=false)');
     return null;
   }
 };
@@ -122,18 +137,19 @@ if (ENABLE_HTTPS) {
         key: fs.readFileSync(sslConfig.key),
         cert: fs.readFileSync(sslConfig.cert)
       };
-      
       const httpsServer = https.createServer(httpsOptions, app);
-      
       httpsServer.listen(HTTPS_PORT, () => {
         console.log(`🔒 HTTPS Server started on port ${HTTPS_PORT}`);
         console.log(`🌐 Access at: https://localhost:${HTTPS_PORT}`);
         console.log(`✅ SSL/TLS encryption enabled`);
         console.log(`🛡️  Razorpay HTTPS compliance: READY`);
+        console.log(`⚠️  Browser Warning: Click "Advanced" -> "Proceed to localhost" to bypass self-signed certificate warning`);
       });
-      
       httpsServer.on('error', (err) => {
-        console.error('HTTPS Server Error:', err.message);
+        console.error('❌ HTTPS Server Error:', err.message);
+        if (err.code === 'EADDRINUSE') {
+          console.log(`🚫 Port ${HTTPS_PORT} is already in use. Try a different port or stop the existing process.`);
+        }
       });
     } catch (error) {
       console.error('❌ Failed to start HTTPS server:', error.message);
@@ -142,6 +158,7 @@ if (ENABLE_HTTPS) {
   }
 } else {
   console.log('ℹ️  HTTPS is disabled. Set ENABLE_HTTPS=true in .env to enable.');
+  console.log('📝 For development, HTTP is recommended to avoid certificate warnings.');
 }
 
 // Graceful shutdown

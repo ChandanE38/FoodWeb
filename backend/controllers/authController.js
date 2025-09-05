@@ -2,17 +2,49 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+// Function to validate JWT_SECRET
+const validateJWTSecret = () => {
+  if (!process.env.JWT_SECRET) {
+    console.error('❌ JWT_SECRET is not defined in environment variables');
+    console.error('   Please add JWT_SECRET to your .env file');
+    throw new Error('JWT_SECRET environment variable is required');
+  }
+};
+
+console.log('✅ Auth controller loaded successfully');
+
 // @desc    Register new user
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = async (req, res) => {
   try {
+    // Validate JWT_SECRET is available
+    validateJWTSecret();
+    
+    console.log('Registration attempt:', { body: req.body });
+    
     const { name, email, password } = req.body;
+
+    // Input validation
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Please provide name, email, and password' });
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Please provide a valid email address' });
+    }
+
+    // Password strength validation
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+    }
 
     // Check if user exists
     let user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: 'User already exists with this email' });
     }
 
     // Create new user
@@ -28,6 +60,8 @@ const registerUser = async (req, res) => {
 
     // Save user
     await user.save();
+    
+    console.log(`New user registered: ${email}`);
 
     // Create JWT payload
     const payload = {
@@ -42,13 +76,26 @@ const registerUser = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '1h' },
       (err, token) => {
-        if (err) throw err;
-        res.json({ token });
+        if (err) {
+          console.error('JWT signing error:', err);
+          return res.status(500).json({ message: 'Error creating token' });
+        }
+        res.status(201).json({ 
+          token,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email
+          }
+        });
       }
     );
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+    console.error('Registration error:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'User already exists with this email' });
+    }
+    res.status(500).json({ message: 'Server error during registration' });
   }
 };
 
@@ -57,7 +104,15 @@ const registerUser = async (req, res) => {
 // @access  Public
 const loginUser = async (req, res) => {
   try {
+    // Validate JWT_SECRET is available
+    validateJWTSecret();
+    
     const { email, password } = req.body;
+
+    // Input validation
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Please provide email and password' });
+    }
 
     // Check if user exists
     const user = await User.findOne({ email });
@@ -71,6 +126,8 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
+    console.log(`User logged in: ${email}`);
+
     // Create JWT payload
     const payload = {
       user: {
@@ -84,13 +141,23 @@ const loginUser = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '1h' },
       (err, token) => {
-        if (err) throw err;
-        res.json({ token });
+        if (err) {
+          console.error('JWT signing error:', err);
+          return res.status(500).json({ message: 'Error creating token' });
+        }
+        res.json({ 
+          token,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email
+          }
+        });
       }
     );
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error during login' });
   }
 };
 
@@ -208,4 +275,4 @@ module.exports = {
   getCart,
   removeFromCart,
   updateCartItemQuantity,
-}; 
+};

@@ -6,9 +6,14 @@ const PaymentSchema = new mongoose.Schema({
     ref: 'User', // Reference to the User model
     required: true
   },
+  razorpayOrderId: {
+    type: String, // Razorpay order ID (string format)
+    required: false
+  },
   order: { // Optional: Link to an Order model if you create one later
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Order'
+    ref: 'Order',
+    required: false
   },
   paymentMethod: {
     type: String,
@@ -21,12 +26,12 @@ const PaymentSchema = new mongoose.Schema({
   currency: {
     type: String,
     required: true,
-    default: 'USD' // Assuming USD as default, adjust as needed
+    default: 'INR' // Indian Rupees for food delivery app
   },
   transactionId: {
     type: String, // ID from the payment gateway
-    required: true,
-    unique: true
+    required: true
+    // Removed unique constraint to allow multiple pending payments
   },
   status: {
     type: String,
@@ -37,6 +42,9 @@ const PaymentSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  verifiedAt: {
+    type: Date
   }
 });
 
